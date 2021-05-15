@@ -20,7 +20,7 @@ Follow the steps below to submit your solution.
 
 2. Go inside the current week's folder.
 
-3. Read the challenge description by [clicking here]('week-1/README.md'). The description will be present in every week's folder as README.md.
+3. Read the challenge description by [clicking here](week-1/README.md). The description will be present in every week's folder as README.md.
 
 4. Create a new folder with your github username and update your solution there.
 
