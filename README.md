@@ -2,6 +2,8 @@
 
 > Week 1 - Currently Accepting Solutions.
 
+> Challenge: [CSV TO JSON](week-1/README.md)
+
 > Expiry Date: 22<sup>th</sup> May 2021
 
 This repository contains all challenges given by the mentors and administrators of [IT Students Of Nepal](https://www.facebook.com/itsnporg). 
