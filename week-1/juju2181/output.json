@@ -1,0 +1,33 @@
+[{
+    "first_name": "Sam",
+    "last_name": "Pollar",
+    "age": 18
+}, {
+    "first_name": "Sunny",
+    "last_name": "Emerald",
+    "age": 23
+}, {
+    "first_name": "Barack",
+    "last_name": "Obama",
+    "age": 32
+}, {
+    "first_name": "Anurag",
+    "last_name": "Patel",
+    "age": 32
+}, {
+    "first_name": "Srinath",
+    "last_name": "Patel",
+    "age": 34
+}, {
+    "first_name": "Alexandra",
+    "last_name": "Hamburger",
+    "age": 36
+}, {
+    "first_name": "Ava",
+    "last_name": "Amy",
+    "age": 5
+}, {
+    "first_name": "Amrit",
+    "last_name": "KC",
+    "age": 23
+}]
