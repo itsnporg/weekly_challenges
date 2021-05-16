@@ -35,7 +35,7 @@ const csvToJson = (csv) => {
 
 if (process.argv[2]) {
   const filePath = path.join("../", process.argv[2]);
-  console.log(filePath);
+
   const csv = fs.readFileSync(filePath, { encoding: "utf-8" });
   if (csv) {
     csvToJson(csv);
