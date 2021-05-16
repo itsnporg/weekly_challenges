@@ -3,6 +3,7 @@
 
 #include "App.h"
 #include "Csv.h"
+#include "helpers.h"
 
 using namespace Sol;
 
@@ -19,7 +20,11 @@ void App::Start(const std::string &file_name)
 
 JsonObj App::ParseCsv(const std::string &file_name)
 {
-    return JsonObj();
+    Csv csv{file_name};
+
+    std::vector<std::string> titles = GetTitle(csv);
+    
+    return GetData(titles, csv);
 }
 
 std::string App::ConvertJsonString(const JsonObj &)
