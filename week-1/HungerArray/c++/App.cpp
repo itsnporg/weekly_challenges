@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include "App.h"
 #include "Csv.h"
@@ -12,26 +13,55 @@ void App::Start(const std::string &file_name)
 {
     std::string jsonName = "data.json";
 
-    JsonObj data = ParseCsv(file_name);
+    JsonObjWithTitle data = ParseCsv(file_name);
 
     WriteToJson(jsonName, data);
     return;
 }
 
-JsonObj App::ParseCsv(const std::string &file_name)
+JsonObjWithTitle App::ParseCsv(const std::string &file_name)
 {
     Csv csv{file_name};
 
     std::vector<std::string> titles = GetTitle(csv);
-    
-    return GetData(titles, csv);
+
+    return std::make_pair(GetData(titles, csv), titles);
 }
 
-std::string App::ConvertJsonString(const JsonObj &)
+std::string App::ConvertJsonString(const JsonObjWithTitle &jsWT)
 {
-    return std::string();
+    std::stringstream ss;
+    const JsonObj &jsO = jsWT.first;
+    const std::vector<std::string> &titles = jsWT.second;
+
+    ss << "[\n";
+
+    for (const auto &dict : jsO)
+    {
+        ss << "\t{\n";
+        for (const auto &title : titles)
+        {
+            ss << "\t\t" << '"' << title << '"' <<" : ";
+            if (title == "age")
+                ss << dict.at(title) << '\n';
+            else
+                ss << '"' << dict.at(title) << '"' << ',' << '\n';
+        }
+        ss << "\t}";
+        if (dict != *jsO.rbegin())
+            ss << ",\n";
+        else
+            ss << '\n';
+    }
+
+    ss << ']';
+
+    return std::move(ss.str());
 }
 
-void App::WriteToJson(const std::string &file_name, const JsonObj &jsO)
+void App::WriteToJson(const std::string &file_name, const JsonObjWithTitle &jsWT)
 {
+    std::ofstream jsonFile{file_name};
+
+    jsonFile << ConvertJsonString(jsWT);
 }
