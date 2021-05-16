@@ -18,3 +18,4 @@ print(json_output)
 
 with open('output.json', 'w') as outfile:
     json.dump(json_output,outfile)
+
