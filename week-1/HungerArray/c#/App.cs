@@ -2,6 +2,7 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sol
 {
@@ -55,20 +56,25 @@ namespace Sol
 
         private string ToJsonString(List<Dictionary<string, string>> data)
         {
+            Regex reg = new(@"-?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?", RegexOptions.Compiled);
+
             StringBuilder sw = new();
             sw.AppendLine("[");
             
             foreach(var dict in data)
             {
                 sw.AppendLine("\t{");
-                
-                foreach(var elem in dict)
+
+                foreach (var elem in dict)
                 {
-                    if(elem.Key == "age")
-                        sw.AppendLine($"\t\t\"{elem.Key}\" : {elem.Value}");
+                    if (reg.IsMatch(elem.Value))
+                        sw.AppendLine($"\t\t\"{elem.Key}\" : {elem.Value},");
                     else
                         sw.AppendLine($"\t\t\"{elem.Key}\" : \"{elem.Value}\",");
                 }
+                sw.Remove(sw.Length - 3, 3);
+
+                sw.AppendLine();
 
                 if(dict == data[^1])
                     sw.AppendLine("\t}");

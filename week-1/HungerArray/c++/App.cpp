@@ -33,7 +33,7 @@ JsonObjWithTitle App::ParseCsv(const std::string &file_name)
 
 std::string App::ConvertJsonString(const JsonObjWithTitle &jsWT)
 {
-    static std::regex numVerify{R"((\+|-)?\d*)"};
+    static std::regex numVerify{R"((\+|-)?\d*-?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?)"};
 
     std::stringstream ss;
     const JsonObj &jsO = jsWT.first;
