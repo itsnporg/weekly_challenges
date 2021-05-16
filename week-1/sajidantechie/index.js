@@ -30,7 +30,7 @@ const csvToJson = (csv) => {
     }
   });
 
-  fs.writeFileSync("result.json", JSON.stringify(result));
+  fs.writeFileSync("output.json", JSON.stringify(result));
 };
 
 if (process.argv[2]) {
