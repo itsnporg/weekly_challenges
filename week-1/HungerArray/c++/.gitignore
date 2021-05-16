@@ -1,3 +1,4 @@
 *.o
 main
 data.json
+.vscode

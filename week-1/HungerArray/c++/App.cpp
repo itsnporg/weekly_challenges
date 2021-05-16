@@ -1,3 +1,4 @@
+#include <regex>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -11,7 +12,9 @@ using namespace Sol;
 // @params file_name : the file name of csv file
 void App::Start(const std::string &file_name)
 {
-    std::string jsonName = "data.json";
+
+    std::string jsonName = std::string{file_name};
+    jsonName.replace(jsonName.find('.') + 1, 3, "json");
 
     JsonObjWithTitle data = ParseCsv(file_name);
 
@@ -30,6 +33,8 @@ JsonObjWithTitle App::ParseCsv(const std::string &file_name)
 
 std::string App::ConvertJsonString(const JsonObjWithTitle &jsWT)
 {
+    static std::regex numVerify{R"((\+|-)?\d*)"};
+
     std::stringstream ss;
     const JsonObj &jsO = jsWT.first;
     const std::vector<std::string> &titles = jsWT.second;
@@ -42,10 +47,11 @@ std::string App::ConvertJsonString(const JsonObjWithTitle &jsWT)
         for (const auto &title : titles)
         {
             ss << "\t\t" << '"' << title << '"' <<" : ";
-            if (title == "age")
+            if (std::regex_match(dict.at(title), numVerify))
                 ss << dict.at(title) << '\n';
             else
-                ss << '"' << dict.at(title) << '"' << ',' << '\n';
+                ss << '"' << dict.at(title) << '"';
+            ss << ((*titles.rbegin() == title) ? "\n" : ",\n");
         }
         ss << "\t}";
         if (dict != *jsO.rbegin())
