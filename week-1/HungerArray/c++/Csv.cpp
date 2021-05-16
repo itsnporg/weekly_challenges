@@ -27,6 +27,11 @@ Csv& Csv::operator>>(std::string &str)
     return *this;
 }
 
+Csv::~Csv()
+{
+    file_handle.close();
+}
+
 bool Csv::eof()
 {
     return file_handle.eof();

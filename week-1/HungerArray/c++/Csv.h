@@ -19,6 +19,8 @@ namespace Sol
 
         Csv &operator>>(std::string &);
 
+        ~Csv();
+        
         bool eof();
 
     private:
