@@ -8,7 +8,7 @@ namespace Sol
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("./usuage data.csv");
+                Console.WriteLine("dotnet run data.csv");
                 return;
             }
 
