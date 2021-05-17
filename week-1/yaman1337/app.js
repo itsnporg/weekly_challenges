@@ -11,12 +11,12 @@ function convert2json(fileName) {
     };
     const arrayOfJson = [];
     const csv2array = csv.split('\n');
-    const keys = csv2array[0].split(',');
+    const keys = csv2array[0].trim().split(',');
 
     const arrayOfValues = csv2array.slice(1);
     arrayOfValues.forEach(item => {
       const jsonData = {};
-      const eachArrayOfValue = item.split(',');
+      const eachArrayOfValue = item.trim().split(',');
       for (var i = 0; i < keys.length; i++) {
         jsonData[keys[i]] = eachArrayOfValue[i];
       };
