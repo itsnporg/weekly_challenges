@@ -43,7 +43,7 @@ const csvToJsonConverter = (csvFile) => {
     output.push(resultObj);
   });
 
-  // Converting the age value to number
+  // 4) Converting the age value to number
   output.forEach((el, i) => {
     if (el.age) {
       el.age = parseInt(el.age);
@@ -51,8 +51,8 @@ const csvToJsonConverter = (csvFile) => {
   });
 
   console.log(output);
-  
-  // Finally converting the final output of array objects into json
+
+  // 5) Finally converting the final output of array objects into json
   fs.writeFileSync('result.json', JSON.stringify(output));
 };
 
