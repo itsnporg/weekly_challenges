@@ -9,7 +9,7 @@ I'm sure this disk contain your Hard-Drive password! Can you find it?
 
 Challenge.tar.gz
 
-Hint
+## Hint
 
 Unzip it
 
