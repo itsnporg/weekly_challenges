@@ -2,9 +2,9 @@
 
 > Week 1 - Currently Accepting Solutions.
 
-> Challenge: [CSV TO JSON](week-1/README.md)
+> Challenge: [Make Those Requests Fast](week-2/README.md)
 
-> Expiry Date: 22<sup>th</sup> May 2021
+> Expiry Date: 28<sup>th</sup> May 2021
 
 This repository contains all challenges given by the mentors and administrators of [IT Students Of Nepal](https://www.facebook.com/itsnporg). 
 
@@ -20,7 +20,7 @@ Follow the steps below to submit your solution.
 
 2. Go inside the current week's folder.
 
-3. Read the challenge description by [clicking here](week-1/README.md). The description will be present in every week's folder as README.md.
+3. Read the challenge description by [clicking here](week-2/README.md). The description will be present in every week's folder as README.md.
 
 4. Create a new folder with your github username and update your solution there.
 
