@@ -1,5 +1,5 @@
 
-## Cryptography challenge
+## Digital Forensics challenge
 
 ## Description
 
