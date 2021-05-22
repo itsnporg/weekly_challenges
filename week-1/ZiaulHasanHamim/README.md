@@ -3,5 +3,7 @@ In my solution i used c# with dotnet 5. c# has got some really great libraries f
 
 > Requirement: .net 5
 - https://dotnet.microsoft.com/download/dotnet/5.0
-RUN: `dotnet run -c release` or you can first build and then run the exe
+
+RUN: `dotnet run -c release -- <csvFilename>` or you can first build and then run the exe
+
 OUTPUT: result.json will be created!!
