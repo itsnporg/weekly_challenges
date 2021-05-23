@@ -13,7 +13,7 @@ wget 'https://github.com/Cimihan123/weekly_challenges/raw/main/week-3/Challenge.
 
 
 ```
-xxd  Find\ flag\ from\ unmounted\ disk | grep -i flag
+xxd  Find\ flag\ from\ unmounted\ disk | ag flag
 
 0000a400: 464c 4147 2d67 676d 676b 3035 3039 360a  FLAG-ggmgk05096.
 
