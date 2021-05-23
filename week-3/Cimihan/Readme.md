@@ -6,12 +6,9 @@
 ```
 wget 'https://github.com/Cimihan123/weekly_challenges/raw/main/week-3/Challenge.tar.gz' -O- | tar xzf -
 
-
 /tmp/sad on ☁️  (None)
 ✦ ❯ ls
 'Find flag from unmounted disk'
-
-
 ```
 
 
