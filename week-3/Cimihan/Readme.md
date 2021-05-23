@@ -1,4 +1,4 @@
-# KiranGhimire: Week-3 Solution (Digital Forensic Chal)
+# KiranGhimire: Week-3 Solution (Digital Forensics Chal)
 
 ### My Solution
 
