@@ -3,6 +3,7 @@
 ### My Solution
 
 
+### The below command will download the file and untar it. The tar.gz file won't be saved except the extracted file.
 ```
 wget 'https://github.com/Cimihan123/weekly_challenges/raw/main/week-3/Challenge.tar.gz' -O- | tar xzf -
 
@@ -10,6 +11,9 @@ wget 'https://github.com/Cimihan123/weekly_challenges/raw/main/week-3/Challenge.
 ✦ ❯ ls
 'Find flag from unmounted disk'
 ```
+
+
+### Use hexdump and search for the string flag. I have used "the silver searcher" to search for the string.
 
 
 ```
