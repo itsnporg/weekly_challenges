@@ -64,9 +64,10 @@ Put Step n contents here, including the flag! Remember, **`n`** refers to the la
 Also, include the flag in this last step!
 
 *** 
-
 ```
 
 If you need to include any media contents in your solution, please make sure to include those inside **`assets`** directory in your username's directory.
 
 ***
+
+### Have an wonderful time while trying out the challenge!
