@@ -12,7 +12,7 @@ You are given an executable file (**`ctf.exe`**) for Microsoft Windows - x86_64,
 
 - The challenge is fairly easy if you can figure out what the challenge title states. The entire challenge is based upon the challenge title; i.e. **3.Endianness16**.
 
-- The flag is in the **`flag{flag_here}`** format.
+- The flag is in the **`itsnporg{flag_here}`** format.
 
 ***
 
@@ -35,7 +35,7 @@ You can follow the following Markdown formatting template for the **`README.md`*
 ```
 # YourUsername: Week-4 | RECrypto Challenge: 3.Endianness16
 
-## FLAG: flag{flag_here}
+## FLAG: itsnporg{flag_here}
 
 *** 
 
