@@ -14,8 +14,6 @@ int main(int argv, char **argc)
 
     Url url{argc[1]};
 
-    std::cout << "Scheme: " << url._scheme << '\n'
-              << "Host: " << url._host << '\n'
-              << "Path: " << url._path << std::endl;
+     
     return 0;
 }
