@@ -8,7 +8,7 @@ You are given an executable file (**`ctf.exe`**) for Microsoft Windows - x86_64,
 
 ## Guidelines
 
-- Make sure to stay within the attack surface, which is limited to **`ctf.exe`**, and not the other assets on which this executable file depends upon.
+- Make sure to stay within the attack surface, which is limited to **`ctf.exe`**, and not the other assets upon which this executable file depends.
 
 - The challenge is fairly easy if you can figure out what the challenge title states. The entire challenge is based upon the challenge title; i.e. **3.Endianness16**.
 
