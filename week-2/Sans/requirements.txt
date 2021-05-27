@@ -1,0 +1,12 @@
+certifi==2020.12.5
+cffi==1.14.5
+chardet==4.0.0
+gevent==21.1.2
+greenlet==1.1.0
+grequests==0.6.0
+idna==2.10
+pycparser==2.20
+requests==2.25.1
+urllib3==1.26.5
+zope.event==4.5.0
+zope.interface==5.4.0
