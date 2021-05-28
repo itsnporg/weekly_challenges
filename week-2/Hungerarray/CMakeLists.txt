@@ -6,13 +6,13 @@ set(
     CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -g"
 )
 
-
-
 add_library(
     objects OBJECT
-    Connect.cpp
-    Connect.h
+    Connect.cpp Connect.h
     Url.h
+    WebRequestAbstract.h
+    HttpRequest.cpp HttpRequest.h
+    HttpsRequest.cpp HttpsRequest.h
 )
 
 add_executable(

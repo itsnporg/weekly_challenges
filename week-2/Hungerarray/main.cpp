@@ -16,7 +16,7 @@ int main(int argv, char **argc)
     Url url{argc[1]};
 
     Connect connection{url};
-    connection.Start(1);
+    connection.Start(2);
     connection.Wait();
 
     return 0;
