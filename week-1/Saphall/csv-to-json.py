@@ -22,6 +22,7 @@ def convert(input_csv, output_json):
     with open(input_csv) as csvv:
         csvReader = csv.DictReader(csvv)
         for row in csvReader:
+            row['age'] = int(row['age'])
             jsonArray.append(row)
     with open(output_json, 'w') as jsonn:
         jsonString = json.dumps(jsonArray, indent=4)
