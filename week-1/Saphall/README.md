@@ -5,6 +5,8 @@
 
         python csv-to-json.py 'NAME_OF_CSV_FILE'  'NAME_OF_JSON_FILE'
 
-        > python csv-to-json.py data.csv data.json 
+e.g. 
 
-### If name of "json file" is not given, file is saved as "output.json"
+        python csv-to-json.py data.csv data.json 
+
+#### If name of `json file is not given`, file is saved as `output.json`
