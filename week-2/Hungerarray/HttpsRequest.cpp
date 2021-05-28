@@ -2,6 +2,8 @@
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/read.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio/placeholders.hpp>
 
 #include "HttpsRequest.h"
 
@@ -149,6 +151,81 @@ std::string HttpsRequest::Get(std::string_view reqHeader)
     return temp;
 }
 
+void HttpsRequest::benchmark(Url &url, std::string reqHeader)
+{
+    _reqHeader = reqHeader;
+    Setup_socket(url);
+
+    _resolver.async_resolve(url._host, url._scheme,
+                            boost::bind(&HttpsRequest::handle_resolve, this, asio::placeholders::error, asio::placeholders::iterator));
+}
+
+void HttpsRequest::handle_resolve(const system::error_code &er, tcp::resolver::results_type endpoints)
+{
+    if (er.failed())
+    {
+        std::cout << "resolve failed: " << er.message() << std::endl;
+        return;
+    }
+
+    asio::async_connect(_ssl_socket.lowest_layer(), endpoints,
+                        boost::bind(&HttpsRequest::handle_connect, this, asio::placeholders::error, asio::placeholders::endpoint));
+}
+
+void HttpsRequest::handle_connect(const system::error_code &er, tcp::endpoint endpoint)
+{
+    if (er.failed())
+    {
+        std::cout << "connect failed: " << er.message() << std::endl;
+        return;
+    }
+
+    _ssl_socket.async_handshake(ssl::stream<tcp::socket>::client,
+                                boost::bind(&HttpsRequest::handle_handshake, this, asio::placeholders::error));
+}
+
+void HttpsRequest::handle_handshake(const system::error_code &er)
+{
+    if (er.failed())
+    {
+        std::cout << "Handshake failed: " << er.message() << std::endl;
+        return;
+    }
+
+    asio::async_write(_ssl_socket, asio::buffer(_reqHeader),
+                boost::bind(&HttpsRequest::handle_write, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
+}
+
+void HttpsRequest::handle_write(const system::error_code &er, size_t snt)
+{
+    if (er.failed())
+    {
+        std::cout << "write failed: " << er.message() << std::endl;
+        return;
+    }
+
+    std::shared_ptr<std::string> buf{new std::string};
+    asio::async_read(_ssl_socket, asio::dynamic_buffer(*buf),
+               boost::bind(&HttpsRequest::handle_read, this, buf, asio::placeholders::error, asio::placeholders::bytes_transferred));
+}
+
+void HttpsRequest::handle_read(std::shared_ptr<std::string> buf, const system::error_code &er, size_t recv)
+{
+    if (er.failed())
+    {
+        std::cout << "read failed: " << er.message() << std::endl;
+        return;
+    }
+
+    std::cout << *buf << std::endl;
+
+    if (++count != reqCount)
+    {
+        asio::async_write(_ssl_socket, asio::buffer(_reqHeader),
+                    boost::bind(&HttpsRequest::handle_write, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
+    }
+}
 HttpsRequest::~HttpsRequest()
 {
+    _ssl_socket.shutdown();
 }

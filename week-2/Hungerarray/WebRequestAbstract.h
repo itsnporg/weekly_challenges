@@ -15,7 +15,15 @@ public:
     virtual void async_ConnectAndGet(Url &url, std::string_view reqHeader) = 0;
 
     virtual void Connect(Url &url) = 0;
+    
     virtual std::string Get(std::string_view reqHeader) = 0;
+
+    virtual void benchmark(Url &url, std::string reqHeader) = 0;
+
+    void set_reqCount(size_t lim)
+    {
+        reqCount = lim;
+    }
 
     virtual ~WebRequestAbstract()
     {
@@ -23,6 +31,7 @@ public:
     }
 protected:
     boost::asio::ip::tcp::resolver _resolver;
+    size_t reqCount;
 };
 
 typedef std::unique_ptr<WebRequestAbstract> WebRequest;

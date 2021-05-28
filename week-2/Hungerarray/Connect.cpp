@@ -26,30 +26,22 @@ std::string Connect::Create_request_header(std::string_view host, std::string_vi
        << "Host: " << host << "\r\n"
        << "Accept: text/html\r\n"
        << "User-Agent: Mozilla/5.0\r\n"
-       << "Connection: close\r\n"
        << "\r\n";
 
     return ss.str();
 }
 
-void Connect::StartThreads()
+void Connect::Start(size_t num)
 {
-    auto &ctx = _io_context;
-    boost::asio::post(_thread_pool, [&ctx]() {
-        ctx.run();
-    });
 
 }
 
-void Connect::Start(size_t num)
+void Connect::HitRequest(size_t lim)
 {
-    for (size_t i = 0; i < num; ++i)
-    {
-        _webRequests.emplace_back(Create_WebRequest());
-        _webRequests.back()->async_ConnectAndGet(_url, _request_header);
-        if (!i)
-            StartThreads();
-    }
+    WebRequest req{new HttpRequest{_io_context}};
+    req->Connect(_url);
+
+
 }
 
 WebRequest Connect::Create_WebRequest()
