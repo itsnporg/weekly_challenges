@@ -14,7 +14,7 @@ public:
 
     virtual void async_ConnectAndGet(Url &url, std::string_view reqHeader) = 0;
 
-    virtual void Connect(boost::asio::ip::tcp::resolver::results_type &_endpoints) = 0;
+    virtual void Connect(Url &url) = 0;
     virtual std::string Get(std::string_view reqHeader) = 0;
 
     virtual ~WebRequestAbstract()

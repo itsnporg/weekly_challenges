@@ -3,6 +3,7 @@
 
 #include "Connect.h"
 #include "HttpRequest.h"
+#include "HttpsRequest.h"
 
 using boost::asio::ip::tcp;
 
@@ -32,9 +33,19 @@ void Connect::Start(size_t num)
 {
     for (size_t i = 0; i < num; ++i)
     {
-        _webRequests.emplace_back(new HttpRequest{_io_context});
-        _webRequests.back()->async_ConnectAndGet(_url, _request_header);
+        _webRequests.emplace_back(Create_WebRequest());
+        _webRequests.back()->Connect(_url);
+        std::string result = _webRequests.back()->Get(_request_header);
+        std::cout << result << std::endl;
     }
+}
+
+WebRequest Connect::Create_WebRequest()
+{
+    if (_url._scheme == "http")
+        return WebRequest{new HttpRequest{_io_context}};
+    else
+        return WebRequest{new HttpsRequest{_io_context}};
 }
 
 void Connect::Wait()

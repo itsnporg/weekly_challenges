@@ -66,8 +66,9 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                     });
                             });
 }
-void HttpRequest::Connect(tcp::resolver::results_type &_endpoints)
+void HttpRequest::Connect(Url &url)
 {
+    auto _endpoints = _resolver.resolve(url._host, url._scheme);
     asio::connect(_socket, _endpoints);
 }
 

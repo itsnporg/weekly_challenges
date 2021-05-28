@@ -27,4 +27,6 @@ target_link_libraries(
     main
     PUBLIC objects
     PUBLIC -ldl
+    PUBLIC -lssl
+    PUBLIC -lcrypto
 )

@@ -26,6 +26,8 @@ public:
 private:
     std::string Create_request_header(std::string_view host, std::string_view path);
 
+    WebRequest Create_WebRequest();
+
 private:
     Url _url;
     std::list<WebRequest> _webRequests;

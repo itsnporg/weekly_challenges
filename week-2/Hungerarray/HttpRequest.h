@@ -9,7 +9,7 @@ public:
     HttpRequest(boost::asio::io_context &io_ctx);
 
     void async_ConnectAndGet(Url &url, std::string_view reqHeader) override;
-    void Connect(boost::asio::ip::tcp::resolver::results_type &_endpoints) override;
+    void Connect(Url &url) override;
 
     std::string Get(std::string_view reqHeader) override;
 
