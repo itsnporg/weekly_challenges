@@ -57,7 +57,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                        std::cout << "Error on receiving: " << ec.message() << std::endl;
                                                                                                        return;
                                                                                                    }
-#ifndef NDEBUG
+#ifdef LOG
                                                                                                    // write response
                                                                                                    std::cout << *buf << std::endl;
 #endif

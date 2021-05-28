@@ -48,7 +48,7 @@ WebRequest Connect::Create_WebRequest()
 void Connect::Wait()
 {
     auto &ctx = _io_context;
-    size_t available_threads = std::thread::hardware_concurrency();
+    size_t available_threads = 2;
     for (size_t i = 0; i != available_threads; ++i)
     {
         _thread_pool.emplace_back(std::thread{[&ctx]() {

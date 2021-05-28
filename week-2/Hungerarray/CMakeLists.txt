@@ -6,7 +6,7 @@ set(
     CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall"
 )
 
-option(LOG_RESPONSE "Log response from server" Debug)
+option(LOG "log the response" OFF)
 
 add_library(
     objects OBJECT
@@ -17,7 +17,12 @@ add_library(
     HttpsRequest.cpp HttpsRequest.h
 )
 
-target_compile_definitions(objects PUBLIC LOG_RESPONSE)
+target_compile_definitions(objects PUBLIC LOG)
+
+add_executable(
+    child
+    child.cpp
+)
 
 add_executable(
     main
@@ -25,10 +30,11 @@ add_executable(
 )
 
 set_property( TARGET main PROPERTY CXX_STANDARD 17 )
+set_property( TARGET child PROPERTY CXX_STANDARD 17)
 set_property( TARGET objects PROPERTY CXX_STANDARD 17 )
 
 target_link_libraries(
-    main
+    child
     PUBLIC objects
     PUBLIC -ldl
     PUBLIC -lssl

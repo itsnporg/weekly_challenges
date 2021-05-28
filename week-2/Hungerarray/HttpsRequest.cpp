@@ -72,7 +72,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                                                        std::cout << "Failed to get response: " << er.message() << std::endl;
                                                                                                                                        return;
                                                                                                                                    }
-#ifndef NDEBUG
+#ifdef LOG
                                                                                                                                    // got response successfully
                                                                                                                                    std::cout << *buf << std::endl;
 #endif
