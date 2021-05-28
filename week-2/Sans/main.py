@@ -1,9 +1,18 @@
-import grequests
+import requests
 import timeit
+import concurrent.futures
+import sys
 
-def test():
-    rs = (grequests.get("https://api.countapi.xyz/hit/abhishek/key") for _ in range(10000))
-    grequests.map(rs)
+def thread(session, url):
+    session.get(url)
 
-time = timeit.timeit(test, number=1)
-print(time)
+def main():
+    url, num = sys.argv[1], 10000
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num*0.75) as exec:
+        with requests.Session() as session:
+            exec.map(thread,[session]*num, [url]*num)
+            exec.shutdown(wait=True)
+
+t = timeit.timeit(main, number=1)
+
+print(f"Done in {t} seconds")
