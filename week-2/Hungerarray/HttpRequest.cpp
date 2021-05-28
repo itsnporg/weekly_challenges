@@ -24,6 +24,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                 if (ec.failed())
                                 {
                                     std::cout << "Error on resolving: " << ec.message() << std::endl;
+                                    _socket.~basic_stream_socket();
                                     return;
                                 }
 
@@ -34,6 +35,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                         if (ec.failed())
                                                         {
                                                             std::cout << "Error on connection: " << ec.message() << std::endl;
+                                                            _socket.~basic_stream_socket();
                                                             return;
                                                         }
 
@@ -44,23 +46,25 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                               if (ec.failed())
                                                                               {
                                                                                   std::cout << "Error on sending request header: " << ec.message() << std::endl;
+                                                                                  _socket.~basic_stream_socket();
                                                                                   return;
                                                                               }
 
                                                                               // request header sucessfully sent, get the response from server
                                                                               std::shared_ptr<std::string> buf{new std::string{}};
                                                                               asio::async_read(_socket, asio::dynamic_buffer(*buf),
-                                                                                               [buf](const system::error_code &ec, size_t recv_bytes) {
+                                                                                               [this, buf](const system::error_code &ec, size_t recv_bytes)
+                                                                                               {
                                                                                                    // in case reading from socket failed
                                                                                                    if (ec.failed() && ec != asio::error::eof)
                                                                                                    {
                                                                                                        std::cout << "Error on receiving: " << ec.message() << std::endl;
+                                                                                                       _socket.~basic_stream_socket();
                                                                                                        return;
                                                                                                    }
-
+                                                                                                   _socket.~basic_stream_socket();
                                                                                                    // write response
                                                                                                    // std::cout << *buf << std::endl;
-
                                                                                                });
                                                                           });
                                                     });
@@ -88,5 +92,6 @@ std::string HttpRequest::Get(std::string_view reqHeader)
 
 HttpRequest::~HttpRequest()
 {
-    _socket.close();
+    if(_socket.is_open())
+        _socket.~basic_stream_socket();
 }

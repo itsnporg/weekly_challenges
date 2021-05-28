@@ -32,6 +32,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                 if (er.failed())
                                 {
                                     std::cout << "Resolving host failed: " << i << " " << er.message() << std::endl;
+                                    _ssl_socket.~stream();
                                     return;
                                 }
                                 std::cout << "Starting connection" << std::endl;
@@ -43,6 +44,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                         if (er.failed())
                                                         {
                                                             std::cout << "Failed to connect to endpoint: " << i << " " << er.message() << std::endl;
+                                                            _ssl_socket.~stream();
                                                             return;
                                                         }
                                                         _ssl_socket.lowest_layer().set_option(ip::tcp::no_delay(true));
@@ -57,6 +59,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                         if (er.failed())
                                                                                         {
                                                                                             std::cout << "Handshake failed: " << i << " " << er.message() << std::endl;
+                                                                                            _ssl_socket.~stream();
                                                                                             return;
                                                                                         }
 
@@ -69,6 +72,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                               if (er.failed())
                                                                                                               {
                                                                                                                   std::cout << "Failed to send request header: " << i << " " << er.message() << std::endl;
+                                                                                                                  _ssl_socket.~stream();
                                                                                                                   return;
                                                                                                               }
 
@@ -76,15 +80,16 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                               // request header sent, get response from server
                                                                                                               std::shared_ptr<std::string> buf{new std::string};
                                                                                                               asio::async_read(_ssl_socket, asio::dynamic_buffer(*buf),
-                                                                                                                               [buf, i](const system::error_code &er, size_t recv_bytes)
+                                                                                                                               [this, buf, i](const system::error_code &er, size_t recv_bytes)
                                                                                                                                {
                                                                                                                                    // on failure to get response
                                                                                                                                    if (er.failed() && er != asio::error::eof && er != asio::ssl::error::stream_truncated)
                                                                                                                                    {
                                                                                                                                        std::cout << "Failed to get response: " << i << " " << er.message() << std::endl;
+                                                                                                                                       _ssl_socket.~stream();
                                                                                                                                        return;
                                                                                                                                    }
-
+                                                                                                                                   _ssl_socket.~stream();
                                                                                                                                    // got response successfully
                                                                                                                                    // std::cout << *buf << std::endl;
                                                                                                                                });
@@ -146,7 +151,4 @@ std::string HttpsRequest::Get(std::string_view reqHeader)
 
 HttpsRequest::~HttpsRequest()
 {
-    _ssl_socket.async_shutdown([](const system::error_code &er) {
-        return;
-    });
 }
