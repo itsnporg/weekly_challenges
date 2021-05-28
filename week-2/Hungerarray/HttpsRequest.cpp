@@ -13,7 +13,7 @@ ssl::context Create_context()
 {
     ssl::context ctx{ssl::context::sslv23_client};
     ctx.set_default_verify_paths();
-    ctx.set_verify_mode(ssl::verify_peer);
+    ctx.set_verify_mode(ssl::verify_none);
 
     return ctx;
 }
@@ -21,66 +21,78 @@ ssl::context Create_context()
 // ! another beast of a code, only to be used for challenge. There are better ways to do this then what I have done
 void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
+    static size_t i = 0;
     Setup_socket(url);
 
+    std::cout << "Starting resolve " << i << std::endl;
     _resolver.async_resolve(url._host, "443",
-                            [this, reqHeader](const system::error_code &er, tcp::resolver::results_type results) {
+                            [this, reqHeader, i = i](const system::error_code &er, tcp::resolver::results_type results)
+                            {
                                 // on resolving failure
                                 if (er.failed())
                                 {
-                                    std::cout << "Resolving host failed: " << er.message() << std::endl;
+                                    std::cout << "Resolving host failed: " << i << " " << er.message() << std::endl;
                                     return;
                                 }
-
+                                std::cout << "Starting connection" << std::endl;
                                 // use the endpoints to connect
                                 asio::async_connect(_ssl_socket.lowest_layer(), results,
-                                                    [this, reqHeader](const system::error_code &er, const tcp::endpoint &endpoint) {
+                                                    [this, reqHeader, i](const system::error_code &er, const tcp::endpoint &endpoint)
+                                                    {
                                                         // on failure to connect
                                                         if (er.failed())
                                                         {
-                                                            std::cout << "Failed to connect to endpoint: " << er.message() << std::endl;
+                                                            std::cout << "Failed to connect to endpoint: " << i << " " << er.message() << std::endl;
                                                             return;
                                                         }
+                                                        _ssl_socket.lowest_layer().set_option(ip::tcp::no_delay(true));
+                                                        _ssl_socket.lowest_layer().non_blocking(true);
 
+                                                        std::cout << "Starting handshake" << std::endl;
                                                         // perform handshake
                                                         _ssl_socket.async_handshake(ssl::stream<tcp::socket>::client,
-                                                                                    [this, reqHeader](const system::error_code &er) {
+                                                                                    [this, reqHeader, i](const system::error_code &er)
+                                                                                    {
                                                                                         // on handshake failure
                                                                                         if (er.failed())
                                                                                         {
-                                                                                            std::cout << "Handshake failed: " << er.message() << std::endl;
+                                                                                            std::cout << "Handshake failed: " << i << " " << er.message() << std::endl;
                                                                                             return;
                                                                                         }
 
+                                                                                        std::cout << "Starting request write" << std::endl;
                                                                                         // handshake successful, sending request header
                                                                                         asio::async_write(_ssl_socket, asio::buffer(reqHeader),
-                                                                                                          [this](const system::error_code &er, size_t snd_bytes) {
+                                                                                                          [this, i](const system::error_code &er, size_t snd_bytes)
+                                                                                                          {
                                                                                                               // on failure to send request header
                                                                                                               if (er.failed())
                                                                                                               {
-                                                                                                                  std::cout << "Failed to send request header: " << er.message() << std::endl;
+                                                                                                                  std::cout << "Failed to send request header: " << i << " " << er.message() << std::endl;
                                                                                                                   return;
                                                                                                               }
 
+                                                                                                              std::cout << "Starting request read" << std::endl;
                                                                                                               // request header sent, get response from server
                                                                                                               std::shared_ptr<std::string> buf{new std::string};
                                                                                                               asio::async_read(_ssl_socket, asio::dynamic_buffer(*buf),
-                                                                                                                               [buf](const system::error_code &er, size_t recv_bytes) {
+                                                                                                                               [buf, i](const system::error_code &er, size_t recv_bytes)
+                                                                                                                               {
                                                                                                                                    // on failure to get response
                                                                                                                                    if (er.failed() && er != asio::error::eof && er != asio::ssl::error::stream_truncated)
                                                                                                                                    {
-                                                                                                                                       std::cout << "Failed to get response: " << er.message() << std::endl;
+                                                                                                                                       std::cout << "Failed to get response: " << i << " " << er.message() << std::endl;
                                                                                                                                        return;
                                                                                                                                    }
-#ifdef LOG
+
                                                                                                                                    // got response successfully
-                                                                                                                                   std::cout << *buf << std::endl;
-#endif
+                                                                                                                                   // std::cout << *buf << std::endl;
                                                                                                                                });
                                                                                                           });
                                                                                     });
                                                     });
                             });
+    ++i;
 }
 
 void HttpsRequest::Setup_socket(Url &url)

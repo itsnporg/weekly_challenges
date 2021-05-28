@@ -28,9 +28,11 @@ private:
 
     WebRequest Create_WebRequest();
 
+    void StartThreads();
+
 private:
     Url _url;
     std::list<WebRequest> _webRequests;
     std::string _request_header;
-    std::vector<std::thread> _thread_pool;
+    boost::asio::thread_pool _thread_pool;
 };

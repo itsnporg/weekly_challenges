@@ -1,5 +1,8 @@
 #include <sstream>
 #include <algorithm>
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/process.hpp>
 
 #include "Connect.h"
 #include "HttpRequest.h"
@@ -11,7 +14,8 @@ boost::asio::io_context Connect::_io_context;
 
 Connect::Connect(const Url &url)
     : _url{url},
-      _request_header{Create_request_header(url._host, url._path)}
+      _request_header{Create_request_header(url._host, url._path)},
+      _thread_pool{5}
 {
 }
 
@@ -28,12 +32,23 @@ std::string Connect::Create_request_header(std::string_view host, std::string_vi
     return ss.str();
 }
 
+void Connect::StartThreads()
+{
+    auto &ctx = _io_context;
+    boost::asio::post(_thread_pool, [&ctx]() {
+        ctx.run();
+    });
+
+}
+
 void Connect::Start(size_t num)
 {
     for (size_t i = 0; i < num; ++i)
     {
         _webRequests.emplace_back(Create_WebRequest());
         _webRequests.back()->async_ConnectAndGet(_url, _request_header);
+        if (!i)
+            StartThreads();
     }
 }
 
@@ -47,18 +62,5 @@ WebRequest Connect::Create_WebRequest()
 
 void Connect::Wait()
 {
-    auto &ctx = _io_context;
-    size_t available_threads = 2;
-    for (size_t i = 0; i != available_threads; ++i)
-    {
-        _thread_pool.emplace_back(std::thread{[&ctx]() {
-            ctx.run();
-        }});
-    }
-    _io_context.run();
-
-    std::for_each(_thread_pool.begin(), _thread_pool.end(), [](std::thread &thrd) {
-        if(thrd.joinable())
-            thrd.join();
-    });
+    _thread_pool.join();
 }

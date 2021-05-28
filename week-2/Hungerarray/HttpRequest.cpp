@@ -57,10 +57,10 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                        std::cout << "Error on receiving: " << ec.message() << std::endl;
                                                                                                        return;
                                                                                                    }
-#ifdef LOG
+
                                                                                                    // write response
-                                                                                                   std::cout << *buf << std::endl;
-#endif
+                                                                                                   // std::cout << *buf << std::endl;
+
                                                                                                });
                                                                           });
                                                     });
@@ -69,6 +69,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 void HttpRequest::Connect(Url &url)
 {
     auto _endpoints = _resolver.resolve(url._host, url._scheme);
+    _socket.set_option(tcp::no_delay(true));
     asio::connect(_socket, _endpoints);
 }
 

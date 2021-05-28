@@ -5,8 +5,8 @@
 #include <vector>
 #include <boost/process.hpp>
 
-#define REQ 1000
-#define FD_LIM 1000
+#define REQ 10000
+#define FD_LIM 1024
 
 std::string beautify_duration(std::chrono::seconds input_seconds);
 
@@ -31,7 +31,7 @@ int main(int argv, char **argc)
 
     std::for_each(process_pool.begin(), process_pool.end(), [](boost::process::child &proc) {
         if (proc.joinable())
-            proc.join();
+            proc.wait();
     });
 
     auto duration = std::chrono::high_resolution_clock::now() - strt;
