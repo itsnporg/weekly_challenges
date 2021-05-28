@@ -9,4 +9,4 @@ e.g.
 
         python csv-to-json.py data.csv data.json 
 
-#### If name of `json file is not given`, file is saved as `output.json`
+* #### If name of `json file is not given`, file is saved as `output.json`
