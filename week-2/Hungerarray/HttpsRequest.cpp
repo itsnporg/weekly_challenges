@@ -23,7 +23,7 @@ void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
     Setup_socket(url);
 
-    _resolver.async_resolve(url._host, url._scheme,
+    _resolver.async_resolve(url._host, "443",
                             [this, reqHeader](const system::error_code &er, tcp::resolver::results_type results) {
                                 // on resolving failure
                                 if (er.failed())

@@ -18,7 +18,7 @@ HttpRequest::HttpRequest(asio::io_context &io_ctx)
 // ! beast of a code, this is not good practice but for the sake of challenge I did it in this way.
 void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
-    _resolver.async_resolve(url._host, url._scheme,
+    _resolver.async_resolve(url._host, "80",
                             [this, reqHeader](const system::error_code &ec, const tcp::resolver::results_type &res) {
                                 // in case url resolving fails
                                 if (ec.failed())
