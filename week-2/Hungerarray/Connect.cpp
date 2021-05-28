@@ -13,7 +13,6 @@ Connect::Connect(const Url &url)
     : _url{url},
       _request_header{Create_request_header(url._host, url._path)}
 {
-    std::cout << "Endpoints Setup Complete" << std::endl;
 }
 
 std::string Connect::Create_request_header(std::string_view host, std::string_view path)
@@ -48,6 +47,18 @@ WebRequest Connect::Create_WebRequest()
 
 void Connect::Wait()
 {
-    auto taskCompleted = _io_context.run();
-    std::cout << "Task Completed: " << taskCompleted << std::endl;
+    auto &ctx = _io_context;
+    size_t available_threads = std::thread::hardware_concurrency();
+    for (size_t i = 0; i != available_threads; ++i)
+    {
+        _thread_pool.emplace_back(std::thread{[&ctx]() {
+            ctx.run();
+        }});
+    }
+    _io_context.run();
+
+    std::for_each(_thread_pool.begin(), _thread_pool.end(), [](std::thread &thrd) {
+        if(thrd.joinable())
+            thrd.join();
+    });
 }

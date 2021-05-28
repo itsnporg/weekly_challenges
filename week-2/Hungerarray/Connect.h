@@ -32,4 +32,5 @@ private:
     Url _url;
     std::list<WebRequest> _webRequests;
     std::string _request_header;
+    std::vector<std::thread> _thread_pool;
 };

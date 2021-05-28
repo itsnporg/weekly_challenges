@@ -6,7 +6,7 @@ set(
     CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall"
 )
 
-option(LOG_RESPONSE "Log response from server" ON)
+option(LOG_RESPONSE "Log response from server" Debug)
 
 add_library(
     objects OBJECT

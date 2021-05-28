@@ -18,7 +18,6 @@ HttpRequest::HttpRequest(asio::io_context &io_ctx)
 // ! beast of a code, this is not good practice but for the sake of challenge I did it in this way.
 void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
-    std::cout << "Started connection" << std::endl;
     _resolver.async_resolve(url._host, url._scheme,
                             [this, reqHeader](const system::error_code &ec, const tcp::resolver::results_type &res) {
                                 // in case url resolving fails
@@ -58,7 +57,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                        std::cout << "Error on receiving: " << ec.message() << std::endl;
                                                                                                        return;
                                                                                                    }
-#ifdef LOG_RESPONSE
+#ifndef NDEBUG
                                                                                                    // write response
                                                                                                    std::cout << *buf << std::endl;
 #endif

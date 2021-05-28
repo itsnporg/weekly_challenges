@@ -1,6 +1,4 @@
 #include <iostream>
-#include <regex>
-#include <string>
 
 #include "Url.h"
 #include "Connect.h"
@@ -16,7 +14,7 @@ int main(int argv, char **argc)
     Url url{argc[1]};
 
     Connect connection{url};
-    connection.Start(2);
+    connection.Start(100);
     connection.Wait();
 
     return 0;
