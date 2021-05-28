@@ -10,10 +10,12 @@ using namespace boost;
 using namespace boost::asio::ip;
 
 HttpRequest::HttpRequest(asio::io_context &io_ctx)
-    : _socket{io_ctx}, WebRequestAbstract{io_ctx}
+    : WebRequestAbstract{io_ctx},
+      _socket{io_ctx}
 {
 }
 
+// ! beast of a code, this is not good practice but for the sake of challenge I did it in this way.
 void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
     std::cout << "Started connection" << std::endl;
@@ -47,9 +49,9 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                               }
 
                                                                               // request header sucessfully sent, get the response from server
-                                                                              std::shared_ptr<std::string> buf{new std::string};
+                                                                              std::shared_ptr<std::string> buf{new std::string{}};
                                                                               asio::async_read(_socket, asio::dynamic_buffer(*buf),
-                                                                                               [&buf](const system::error_code &ec, size_t recv_bytes) {
+                                                                                               [buf](const system::error_code &ec, size_t recv_bytes) {
                                                                                                    // in case reading from socket failed
                                                                                                    if (ec.failed() && ec != asio::error::eof)
                                                                                                    {
@@ -58,7 +60,7 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                                                                    }
 
                                                                                                    // write response
-                                                                                                   std::cout << *buf << std::endl;
+                                                                                                   // std::cout << *buf << std::endl;
                                                                                                });
                                                                           });
                                                     });

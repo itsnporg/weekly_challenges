@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <iostream>
+#include <list>
 #include <boost/asio.hpp>
 
 #include "WebRequestAbstract.h"
@@ -26,9 +27,7 @@ private:
     std::string Create_request_header(std::string_view host, std::string_view path);
 
 private:
-    // ? is using std::unique_ptr better here ?
-    std::vector<WebRequest> _webRequests;
+    Url _url;
+    std::list<WebRequest> _webRequests;
     std::string _request_header;
-    boost::asio::ip::tcp::resolver _resolver;
-    boost::asio::ip::tcp::resolver::results_type _endpoints;
 };

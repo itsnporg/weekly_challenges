@@ -23,7 +23,6 @@ public:
     }
 protected:
     boost::asio::ip::tcp::resolver _resolver;
-
 };
 
 typedef std::unique_ptr<WebRequestAbstract> WebRequest;
