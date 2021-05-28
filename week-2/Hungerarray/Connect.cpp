@@ -34,9 +34,7 @@ void Connect::Start(size_t num)
     for (size_t i = 0; i < num; ++i)
     {
         _webRequests.emplace_back(Create_WebRequest());
-        _webRequests.back()->Connect(_url);
-        std::string result = _webRequests.back()->Get(_request_header);
-        std::cout << result << std::endl;
+        _webRequests.back()->async_ConnectAndGet(_url, _request_header);
     }
 }
 

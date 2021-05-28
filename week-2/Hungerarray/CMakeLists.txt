@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.10)
 project(fast_Request)
 
 set(
-    CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -g"
+    CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall"
 )
+
+option(LOG_RESPONSE "Log response from server" ON)
 
 add_library(
     objects OBJECT
@@ -14,6 +16,8 @@ add_library(
     HttpRequest.cpp HttpRequest.h
     HttpsRequest.cpp HttpsRequest.h
 )
+
+target_compile_definitions(objects PUBLIC LOG_RESPONSE)
 
 add_executable(
     main

@@ -18,9 +18,69 @@ ssl::context Create_context()
     return ctx;
 }
 
+// ! another beast of a code, only to be used for challenge. There are better ways to do this then what I have done
 void HttpsRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
 {
+    Setup_socket(url);
 
+    _resolver.async_resolve(url._host, url._scheme,
+                            [this, reqHeader](const system::error_code &er, tcp::resolver::results_type results) {
+                                // on resolving failure
+                                if (er.failed())
+                                {
+                                    std::cout << "Resolving host failed: " << er.message() << std::endl;
+                                    return;
+                                }
+
+                                // use the endpoints to connect
+                                asio::async_connect(_ssl_socket.lowest_layer(), results,
+                                                    [this, reqHeader](const system::error_code &er, const tcp::endpoint &endpoint) {
+                                                        // on failure to connect
+                                                        if (er.failed())
+                                                        {
+                                                            std::cout << "Failed to connect to endpoint: " << er.message() << std::endl;
+                                                            return;
+                                                        }
+
+                                                        // perform handshake
+                                                        _ssl_socket.async_handshake(ssl::stream<tcp::socket>::client,
+                                                                                    [this, reqHeader](const system::error_code &er) {
+                                                                                        // on handshake failure
+                                                                                        if (er.failed())
+                                                                                        {
+                                                                                            std::cout << "Handshake failed: " << er.message() << std::endl;
+                                                                                            return;
+                                                                                        }
+
+                                                                                        // handshake successful, sending request header
+                                                                                        asio::async_write(_ssl_socket, asio::buffer(reqHeader),
+                                                                                                          [this](const system::error_code &er, size_t snd_bytes) {
+                                                                                                              // on failure to send request header
+                                                                                                              if (er.failed())
+                                                                                                              {
+                                                                                                                  std::cout << "Failed to send request header: " << er.message() << std::endl;
+                                                                                                                  return;
+                                                                                                              }
+
+                                                                                                              // request header sent, get response from server
+                                                                                                              std::shared_ptr<std::string> buf{new std::string};
+                                                                                                              asio::async_read(_ssl_socket, asio::dynamic_buffer(*buf),
+                                                                                                                               [buf](const system::error_code &er, size_t recv_bytes) {
+                                                                                                                                   // on failure to get response
+                                                                                                                                   if (er.failed() && er != asio::error::eof && er != asio::ssl::error::stream_truncated)
+                                                                                                                                   {
+                                                                                                                                       std::cout << "Failed to get response: " << er.message() << std::endl;
+                                                                                                                                       return;
+                                                                                                                                   }
+#ifdef LOG_RESPONSE
+                                                                                                                                   // got response successfully
+                                                                                                                                   std::cout << *buf << std::endl;
+#endif
+                                                                                                                               });
+                                                                                                          });
+                                                                                    });
+                                                    });
+                            });
 }
 
 void HttpsRequest::Setup_socket(Url &url)
@@ -35,7 +95,6 @@ HttpsRequest::HttpsRequest(io_context &ctx)
       _ssl_socket{ctx, _ctx}
 
 {
-
 }
 
 void HttpsRequest::Connect(Url &url)
@@ -57,7 +116,6 @@ void HttpsRequest::socket_con_handshake(Url &url)
     }
 }
 
-
 std::string HttpsRequest::Get(std::string_view reqHeader)
 {
     boost::system::error_code ec;
@@ -76,5 +134,7 @@ std::string HttpsRequest::Get(std::string_view reqHeader)
 
 HttpsRequest::~HttpsRequest()
 {
-    _ssl_socket.shutdown();
+    _ssl_socket.async_shutdown([](const system::error_code &er) {
+        return;
+    });
 }
