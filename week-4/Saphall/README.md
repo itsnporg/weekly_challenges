@@ -4,7 +4,7 @@
 
 *** 
 
-## Step-1 : Downloaded '.exe' file with comand:
+## Step-1 : Downloaded '.exe' file with command:
 
         wget 'https://github.com/itsnporg/weekly_challenges/raw/main/week-4/ctf.exe'
 
