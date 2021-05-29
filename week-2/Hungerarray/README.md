@@ -42,14 +42,18 @@ After the above dependencies have been configured, run the provided CMakeLists.t
 
 For first timers, install cmake.
 
-for Linux users 
+for Linux users
 ```
    sudo apt install -y cmake && cmake <src directory with provided CMakeLists.txt>
 ```
 
 this will create a makefile for you to then run to generate the output binaries
 
-you can now run 
+you can now run the program
 ```
    main <url>
 ```
+
+the code can be made to run much quicker, if we keep a persistent connection and post get request on it over and over again
+instead of closing a request on each new entry. Maybe I will try and implement that, do let me know if you wish for me to
+try it using that approach as well. But for now ... we will keep it at this much. ( •̀ ω •́ )✧

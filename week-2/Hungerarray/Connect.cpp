@@ -1,8 +1,6 @@
-#include <sstream>
-#include <algorithm>
+#include <thread>
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/io_context.hpp>
-#include <boost/process.hpp>
 
 #include "Connect.h"
 #include "HttpRequest.h"
@@ -15,7 +13,7 @@ boost::asio::io_context Connect::_io_context;
 Connect::Connect(const Url &url)
     : _url{url},
       _request_header{Create_request_header(url._host, url._path)},
-      _thread_pool{5}
+      _thread_pool{std::thread::hardware_concurrency()}
 {
 }
 
@@ -39,9 +37,8 @@ void Connect::Start(size_t num)
         _webRequests.emplace_back(Create_WebRequest());
         boost::asio::post(_thread_pool, [&req = _request_header, &url = _url, &web = _webRequests.back()]()
                           {
-                              web->async_Connect(url).get();
-                              std::string response = web->async_Get(req).get();
-                              std::cout << response << std::endl;
+                              web->async_Connect(url).wait();
+                              web->async_Get(req).wait();
                           });
     }
 }

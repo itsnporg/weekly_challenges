@@ -2,7 +2,6 @@
 
 #include <string>
 #include <string_view>
-#include <iostream>
 #include <list>
 #include <boost/asio.hpp>
 
@@ -27,8 +26,6 @@ private:
     std::string Create_request_header(std::string_view host, std::string_view path);
 
     WebRequest Create_WebRequest();
-
-    void HitRequest(size_t lim);
 
 private:
     Url _url;

@@ -6,8 +6,6 @@ set(
     CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall"
 )
 
-option(LOG "log the response" OFF)
-
 add_library(
     objects OBJECT
     Connect.cpp Connect.h
