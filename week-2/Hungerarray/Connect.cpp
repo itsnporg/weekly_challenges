@@ -37,8 +37,8 @@ void Connect::Start(size_t num)
         _webRequests.emplace_back(Create_WebRequest());
         boost::asio::post(_thread_pool, [&req = _request_header, &url = _url, &web = _webRequests.back()]()
                           {
-                              web->async_Connect(url).wait();
-                              web->async_Get(req).wait();
+                              web->async_Connect(url).get();
+                              web->async_Get(req).get();
                           });
     }
 }
