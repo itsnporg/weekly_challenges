@@ -31,11 +31,16 @@ private:
 
     void handle_write(const boost::system::error_code &er, size_t snt);
 
-    void handle_read(std::shared_ptr<std::string> buf, const boost::system::error_code &er, size_t recv);
+    void handle_read(std::string buf, const boost::system::error_code &er, size_t recv);
+
+    void handle_readheader(std::shared_ptr<std::string> buf, const boost::system::error_code &er, size_t recv);
+
+    void Restart();
 
 private:
     boost::asio::ssl::context _ctx;
     boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _ssl_socket;
     std::string _reqHeader;
+    Url _url;
     size_t count = 0;
 };

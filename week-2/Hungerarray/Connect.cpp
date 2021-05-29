@@ -33,15 +33,16 @@ std::string Connect::Create_request_header(std::string_view host, std::string_vi
 
 void Connect::Start(size_t num)
 {
-
-}
-
-void Connect::HitRequest(size_t lim)
-{
-    WebRequest req{new HttpRequest{_io_context}};
-    req->Connect(_url);
-
-
+    size_t reqcount = 100;
+    size_t tot = num / reqcount;
+    for (size_t i = 0; i < tot; ++i)
+    {
+        _webRequests.emplace_back(Create_WebRequest());
+        _webRequests.back()->set_reqCount(reqcount);
+        _webRequests.back()->benchmark(_url, _request_header);
+    }
+    _webRequests.emplace_back(Create_WebRequest());
+    _webRequests.back()->set_reqCount(num - tot * reqcount);
 }
 
 WebRequest Connect::Create_WebRequest()
@@ -54,5 +55,8 @@ WebRequest Connect::Create_WebRequest()
 
 void Connect::Wait()
 {
+    auto &ctx = _io_context;
+    boost::asio::post(_thread_pool, [&ctx]()
+                      { ctx.run(); });
     _thread_pool.join();
 }

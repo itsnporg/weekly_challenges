@@ -32,6 +32,7 @@ private:
 
 private:
     Url _url;
+    std::list<WebRequest> _webRequests;
     std::string _request_header;
     boost::asio::thread_pool _thread_pool;
 };

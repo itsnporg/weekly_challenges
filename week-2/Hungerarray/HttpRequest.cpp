@@ -97,6 +97,7 @@ std::string HttpRequest::Get(std::string_view reqHeader)
 
 void HttpRequest::benchmark(Url &url, std::string reqHeader)
 {
+    
     _reqHeader = reqHeader;
     _resolver.async_resolve(url._host, url._scheme,
                             boost::bind(&HttpRequest::handle_resolve, this, boost::asio::placeholders::error, boost::asio::placeholders::iterator));
