@@ -11,9 +11,13 @@ public:
     void async_ConnectAndGet(Url &url, std::string_view reqHeader) override;
 
     void Connect(Url &url) override;
-    void benchmark(Url &url, std::string reqHeader) override;
+    std::future<void> async_Connect(Url &url) override;
 
     std::string Get(std::string_view reqHeader) override;
+    std::future<std::string> async_Get(std::string_view reqHeader) override;
+    
+    void benchmark(Url &url, std::string reqHeader) override;
+
 
 
     ~HttpRequest() override;

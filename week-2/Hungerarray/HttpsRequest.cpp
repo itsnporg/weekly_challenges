@@ -113,8 +113,22 @@ HttpsRequest::HttpsRequest(io_context &ctx)
     : WebRequestAbstract{ctx},
       _ctx{Create_context()},
       _ssl_socket{ctx, _ctx},
-    _url{"garbage"}
+      _url{"garbage"}
 {
+}
+
+void HttpsRequest::socket_con_handshake(Url &url)
+{
+    auto endpoints = _resolver.resolve(url._host, url._scheme);
+    boost::asio::connect(_ssl_socket.lowest_layer(), endpoints);
+    _ssl_socket.lowest_layer().set_option(tcp::no_delay(true));
+    boost::system::error_code ec;
+    _ssl_socket.handshake(ssl::stream<tcp::socket>::client, ec);
+    if (ec.failed())
+    {
+        std::cout << "Handshake failed: " << ec.message() << std::endl;
+        return;
+    }
 }
 
 void HttpsRequest::Connect(Url &url)
@@ -123,17 +137,10 @@ void HttpsRequest::Connect(Url &url)
     socket_con_handshake(url);
 }
 
-void HttpsRequest::socket_con_handshake(Url &url)
+std::future<void> HttpsRequest::async_Connect(Url &url)
 {
-    auto endpoints = _resolver.resolve(url._host, url._scheme);
-    boost::asio::connect(_ssl_socket.lowest_layer(), endpoints);
-    boost::system::error_code ec;
-    _ssl_socket.handshake(ssl::stream<tcp::socket>::client, ec);
-    if (ec.failed())
-    {
-        std::cout << "Handshake failed: " << ec.message() << std::endl;
-        return;
-    }
+    return std::async( [this, &url]() -> void
+                      { Connect(url); });
 }
 
 std::string HttpsRequest::Get(std::string_view reqHeader)
@@ -150,6 +157,12 @@ std::string HttpsRequest::Get(std::string_view reqHeader)
     std::string temp;
     asio::read(_ssl_socket, asio::dynamic_buffer(temp), ec);
     return temp;
+}
+
+std::future<std::string> HttpsRequest::async_Get(std::string_view reqHeader)
+{
+    return std::async([this, reqHeader]() -> std::string
+                      { return Get(reqHeader); });
 }
 
 void HttpsRequest::Restart()
@@ -221,12 +234,12 @@ void HttpsRequest::handle_write(const system::error_code &er, size_t snt)
     std::cout << "reading header" << std::endl;
     std::shared_ptr<std::string> buf{new std::string};
     asio::async_read_until(_ssl_socket, asio::dynamic_buffer(*buf), "\r\n\r\n",
-               boost::bind(&HttpsRequest::handle_readheader, this, buf, asio::placeholders::error, asio::placeholders::bytes_transferred));
+                           boost::bind(&HttpsRequest::handle_readheader, this, buf, asio::placeholders::error, asio::placeholders::bytes_transferred));
 }
 
 void HttpsRequest::handle_readheader(std::shared_ptr<std::string> buf, const boost::system::error_code &er, size_t recv)
 {
-    if(er.failed())
+    if (er.failed())
     {
         std::cout << "read failed: " << er.message() << std::endl;
         Restart();
@@ -255,5 +268,5 @@ void HttpsRequest::handle_read(std::string buf, const system::error_code &er, si
 }
 HttpsRequest::~HttpsRequest()
 {
-
+    _ssl_socket.shutdown();
 }

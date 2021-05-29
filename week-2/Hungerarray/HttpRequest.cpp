@@ -75,11 +75,18 @@ void HttpRequest::async_ConnectAndGet(Url &url, std::string_view reqHeader)
                                                     });
                             });
 }
+
 void HttpRequest::Connect(Url &url)
 {
     auto _endpoints = _resolver.resolve(url._host, url._scheme);
-    _socket.set_option(tcp::no_delay(true));
     asio::connect(_socket, _endpoints);
+    _socket.set_option(tcp::no_delay(true));
+}
+
+std::future<void> HttpRequest::async_Connect(Url &url)
+{
+    return std::async([this, &url]() -> void
+                      { Connect(url); });
 }
 
 std::string HttpRequest::Get(std::string_view reqHeader)
@@ -87,17 +94,25 @@ std::string HttpRequest::Get(std::string_view reqHeader)
     boost::system::error_code ec;
     asio::write(_socket, asio::buffer(reqHeader), ec);
 
-    if (ec.failed())
+    if (ec.failed()){
         std::cout << "Error on write header: " << ec.message() << std::endl;
+        return std::string{};
+    }
 
     std::string temp;
     asio::read(_socket, asio::dynamic_buffer(temp), ec);
     return temp;
 }
 
+std::future<std::string> HttpRequest::async_Get(std::string_view reqHeader)
+{
+    return std::async([this, reqHeader]() -> std::string
+                      { return Get(reqHeader); });
+}
+
 void HttpRequest::benchmark(Url &url, std::string reqHeader)
 {
-    
+
     _reqHeader = reqHeader;
     _resolver.async_resolve(url._host, url._scheme,
                             boost::bind(&HttpRequest::handle_resolve, this, boost::asio::placeholders::error, boost::asio::placeholders::iterator));
@@ -155,6 +170,5 @@ void HttpRequest::handle_read(std::shared_ptr<std::string> response, const syste
 }
 HttpRequest::~HttpRequest()
 {
-    if (_socket.is_open())
-        _socket.~basic_stream_socket();
+    _socket.close();
 }

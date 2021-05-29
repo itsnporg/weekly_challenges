@@ -4,6 +4,7 @@
 #include <string_view>
 #include <memory>
 #include <sstream>
+#include <future>
 
 #include "Url.h"
 
@@ -15,8 +16,10 @@ public:
     virtual void async_ConnectAndGet(Url &url, std::string_view reqHeader) = 0;
 
     virtual void Connect(Url &url) = 0;
+    virtual std::future<void> async_Connect(Url &url) = 0;
 
     virtual std::string Get(std::string_view reqHeader) = 0;
+    virtual std::future<std::string> async_Get(std::string_view reqHeader) = 0;
 
     virtual void benchmark(Url &url, std::string reqHeader) = 0;
 
@@ -30,19 +33,19 @@ public:
         size_t len;
         while (true)
         {
-            if (header.str().empty())
-                return 0;
             std::string temp;
             std::getline(header >> std::ws, temp);
 
             std::stringstream ss{temp};
             std::string type;
             ss >> type;
-            if (type == "content-length:")
+            if (type == "Content-Length:")
             {
                 ss >> len;
                 return len;
             }
+            if (temp.empty())
+                return 0;
         }
     }
 

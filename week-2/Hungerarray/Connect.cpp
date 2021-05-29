@@ -26,6 +26,7 @@ std::string Connect::Create_request_header(std::string_view host, std::string_vi
        << "Host: " << host << "\r\n"
        << "Accept: text/html\r\n"
        << "User-Agent: Mozilla/5.0\r\n"
+       << "Connection: close\r\n"
        << "\r\n";
 
     return ss.str();
@@ -33,16 +34,16 @@ std::string Connect::Create_request_header(std::string_view host, std::string_vi
 
 void Connect::Start(size_t num)
 {
-    size_t reqcount = 100;
-    size_t tot = num / reqcount;
-    for (size_t i = 0; i < tot; ++i)
+    for (size_t i = 0; i < num; ++i)
     {
         _webRequests.emplace_back(Create_WebRequest());
-        _webRequests.back()->set_reqCount(reqcount);
-        _webRequests.back()->benchmark(_url, _request_header);
+        boost::asio::post(_thread_pool, [&req = _request_header, &url = _url, &web = _webRequests.back()]()
+                          {
+                              web->async_Connect(url).get();
+                              std::string response = web->async_Get(req).get();
+                              std::cout << response << std::endl;
+                          });
     }
-    _webRequests.emplace_back(Create_WebRequest());
-    _webRequests.back()->set_reqCount(num - tot * reqcount);
 }
 
 WebRequest Connect::Create_WebRequest()
@@ -55,8 +56,5 @@ WebRequest Connect::Create_WebRequest()
 
 void Connect::Wait()
 {
-    auto &ctx = _io_context;
-    boost::asio::post(_thread_pool, [&ctx]()
-                      { ctx.run(); });
-    _thread_pool.join();
+   _thread_pool.join();
 }
