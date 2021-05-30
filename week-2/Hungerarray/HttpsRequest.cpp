@@ -84,7 +84,33 @@ std::future<std::string> HttpsRequest::async_Get(std::string_view reqHeader)
                       { return Get(reqHeader); });
 }
 
+std::string HttpsRequest::Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num)
+{
+    if (!num)
+        return std::string{};
+        
+    boost::system::error_code ec;
+    for (size_t i = 0;i < num - 1; ++i)
+    {
+        asio::write(_ssl_socket, asio::buffer(reqHeader), ec);
+        if(ec.failed())
+            std::cout << "pipeline failed at: " << i+ 1 << ec.message() << std::endl; 
+    }
+    asio::write(_ssl_socket, asio::buffer(end_reqHeader), ec);
+
+    std::string temp; 
+    asio::read(_ssl_socket, asio::dynamic_buffer(temp), ec);
+    return temp;
+}
+
+std::future<std::string> HttpsRequest::async_Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num)
+{
+    return std::async([this, reqHeader, end_reqHeader, num](){
+        return Get_pipeline(reqHeader, end_reqHeader, num);
+    });
+}
+
 HttpsRequest::~HttpsRequest()
 {
-    _ssl_socket.shutdown();
+
 }

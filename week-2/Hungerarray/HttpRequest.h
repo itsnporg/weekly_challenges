@@ -14,6 +14,9 @@ public:
     std::string Get(std::string_view reqHeader) override;
     std::future<std::string> async_Get(std::string_view reqHeader) override;
     
+    std::string Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num) override;
+    std::future<std::string> async_Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num) override;
+    
     ~HttpRequest() override;
 
 private:

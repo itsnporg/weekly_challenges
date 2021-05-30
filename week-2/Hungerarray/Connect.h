@@ -23,13 +23,16 @@ public:
     void Wait();
 
 private:
-    std::string Create_request_header(std::string_view host, std::string_view path);
+    std::string Create_request_header(std::string_view host, std::string_view path, bool persistent);
 
     WebRequest Create_WebRequest();
+
+    void Create_request(size_t socketNo, size_t lim);
 
 private:
     Url _url;
     std::list<WebRequest> _webRequests;
     std::string _request_header;
+    std::string _req_persist_header;
     boost::asio::thread_pool _thread_pool;
 };

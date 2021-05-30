@@ -51,6 +51,29 @@ std::future<std::string> HttpRequest::async_Get(std::string_view reqHeader)
                       { return Get(reqHeader); });
 }
 
+std::string HttpRequest::Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num)
+{
+     boost::system::error_code ec;
+    for (size_t i = 0; i < num - 1; ++i)
+    {
+        asio::write(_socket, asio::buffer(reqHeader), ec);
+        if(ec.failed())
+            std::cout << "pipeline failed at: " << i+ 1 << ec.message() << std::endl; 
+    }
+    asio::write(_socket, asio::buffer(end_reqHeader), ec);
+
+    std::string temp; 
+    asio::read(_socket, asio::dynamic_buffer(temp), ec);
+    return temp;
+}
+
+std::future<std::string> HttpRequest::async_Get_pipeline(std::string_view reqHeader, std::string_view end_reqHeader, size_t num)
+{
+    return std::async([this, reqHeader, end_reqHeader, num](){
+        return Get_pipeline(reqHeader, end_reqHeader, num);
+    });
+}
+
 HttpRequest::~HttpRequest()
 {
     _socket.close();
