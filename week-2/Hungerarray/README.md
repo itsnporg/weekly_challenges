@@ -54,6 +54,8 @@ you can now run the program
    main <url>
 ```
 
-the code can be made to run much quicker, if we keep a persistent connection and post get request on it over and over again
+<s>the code can be made to run much quicker, if we keep a persistent connection and post get request on it over and over again
 instead of closing a request on each new entry. Maybe I will try and implement that, do let me know if you wish for me to
-try it using that approach as well. But for now ... we will keep it at this much. ( •̀ ω •́ )✧
+try it using that approach as well. But for now ... we will keep it at this much. ( •̀ ω •́ )✧</s>
+   
+Implemented persistence ... was amazed at how much of a big performance improvement it made. O(∩_∩)O
