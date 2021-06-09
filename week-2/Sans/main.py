@@ -1,16 +1,16 @@
 import requests
+import timeit
 import concurrent.futures
 import sys
-import timeit
 
 def thread(session, url):
-    session.head(url)
+    session.get(url)
 
 def main():
-    url = sys.argv[1]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=500) as exec:
+    url, num = sys.argv[1], 10000
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num*0.75) as exec:
         with requests.Session() as session:
-            exec.map(thread,[session]*1000, [url]*1000)
+            exec.map(thread,[session]*num, [url]*num)
             exec.shutdown(wait=True)
 
 t = timeit.timeit(main, number=1)
